@@ -4,6 +4,7 @@ import com.sparta.newspeed.dto.PeedRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Table(name = "newspeed")// 매핑할 테이블의 이름을 지정
+@Setter
 public class Peed extends Timestamped{
 
     @Id
