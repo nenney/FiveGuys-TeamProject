@@ -29,23 +29,27 @@ public class PeedServiceUnitTest {
 
     @Test
     public void testCreatePeed() {
-        PeedRequestDto requestDto = new PeedRequestDto("testuser", "Test content");
+        // given
+        PeedRequestDto requestDto = new PeedRequestDto("testuser", "테스트 내용");
         User user = new User();
         user.setNickname("testuser");
 
         Peed peed = new Peed(requestDto, user);
         when(peedRepository.save(any(Peed.class))).thenReturn(peed);
 
+        // when
         PeedResponseDto responseDto = peedService.createPeed(requestDto, new UserDetailsImpl(user));
 
+        // then
         assertNotNull(responseDto);
-        assertEquals("Test content", responseDto.getContents());
+        assertEquals("테스트 내용", responseDto.getContents());
         assertEquals("testuser", responseDto.getNickname());
     }
 
     @Test
     public void testUpdatePeed() {
-        PeedRequestDto requestDto = new PeedRequestDto("testuser", "Updated content");
+        // given
+        PeedRequestDto requestDto = new PeedRequestDto("testuser", "업데이트된 내용");
         User user = new User();
         user.setNickname("testuser");
 
@@ -53,27 +57,33 @@ public class PeedServiceUnitTest {
         when(peedRepository.findById(any(Long.class))).thenReturn(Optional.of(peed));
         when(peedRepository.save(any(Peed.class))).thenReturn(peed);
 
+        // when
         PeedResponseDto responseDto = peedService.updatePeed(1L, requestDto);
 
+        // then
         assertNotNull(responseDto);
-        assertEquals("Updated content", responseDto.getContents());
+        assertEquals("업데이트된 내용", responseDto.getContents());
     }
 
     @Test
     public void testDeletePeed() {
+        // given
         User user = new User();
         user.setNickname("testuser");
 
-        Peed peed = new Peed(new PeedRequestDto("testuser", "Test content"), user);
+        Peed peed = new Peed(new PeedRequestDto("testuser", "삭제할 내용"), user);
         when(peedRepository.findById(any(Long.class))).thenReturn(Optional.of(peed));
 
-        assertDoesNotThrow(() -> peedService.deletePeed(1L, new PeedRequestDto("testuser", "Test content")));
+        // when-then, assertDoesNotThrow을 사용하여 간소화함
+        assertDoesNotThrow(() -> peedService.deletePeed(1L, new PeedRequestDto("testuser", "삭제할 내용")));
     }
 
     @Test
     public void testCreatePeedWithInvalidData() {
-        PeedRequestDto requestDto = new PeedRequestDto("", ""); // Invalid data
+        // given
+        PeedRequestDto requestDto = new PeedRequestDto("", ""); // 잘못된 데이터
 
+        // when-then
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             peedService.createPeed(requestDto, null);
         });

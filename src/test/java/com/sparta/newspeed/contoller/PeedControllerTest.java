@@ -72,43 +72,57 @@ public class PeedControllerTest {
 
     @Test
     public void testCreatePeed() throws Exception {
+        // given
         PeedRequestDto requestDto = new PeedRequestDto("testuser", "Test content");
         PeedResponseDto responseDto = new PeedResponseDto(new Peed(requestDto));
 
+        // peedService.createPeed 메서드가 호출될 때 responseDto를 반환하도록 설정
         when(peedService.createPeed(any(), (UserDetailsImpl) any(Principal.class))).thenReturn(responseDto);
 
+        // when
+        // POST /api/peed 엔드포인트에 requestDto를 JSON으로 전송
         mvc.perform(post("/api/peed")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(responseDto)));
+                // then
+                .andExpect(status().isOk()) // HTTP 상태코드 200 OK를 기대
+                .andExpect(content().json(objectMapper.writeValueAsString(responseDto))); // responseDto와 일치하는 JSON 응답을 기대
     }
 
     @Test
     public void testGetPeeds() throws Exception {
+        // given
         PeedResponseDto responseDto = new PeedResponseDto(new Peed(new PeedRequestDto("testuser", "Test content")));
         Page<PeedResponseDto> pagedResponseDto = new PageImpl<>(Collections.singletonList(responseDto), PageRequest.of(0, 1), 1);
 
+        // peedService.getAllPeeds 메서드가 호출될 때 pagedResponseDto를 반환하도록 설정
         when(peedService.getAllPeeds(any(Integer.class), any(Integer.class), any(String.class), any(Boolean.class))).thenReturn(pagedResponseDto);
 
+        // when
+        // GET /api/peed 엔드포인트에 쿼리 파라미터를 사용하여 요청을 전송
         mvc.perform(get("/api/peed")
                         .param("page", "0")
                         .param("size", "1")
                         .param("sortBy", "id")
                         .param("isAsc", "true")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(pagedResponseDto)));
+                // then
+                .andExpect(status().isOk()) // HTTP 상태코드 200 OK를 기대
+                .andExpect(content().json(objectMapper.writeValueAsString(pagedResponseDto))); // pagedResponseDto와 일치하는 JSON 응답을 기대
     }
 
     @Test
     public void testCreatePeedWithInvalidData() throws Exception {
-        PeedRequestDto requestDto = new PeedRequestDto("", ""); // Invalid data
+        // given
+        PeedRequestDto requestDto = new PeedRequestDto("", ""); // 잘못된 데이터
 
+        // when
+        // POST /api/peed 엔드포인트에 requestDto를 JSON으로 전송
         mvc.perform(post("/api/peed")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isBadRequest());
+                // then
+                .andExpect(status().isBadRequest()); // HTTP 상태코드 400 Bad Request를 기대
     }
 
 }
